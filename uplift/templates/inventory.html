@@ -1,0 +1,112 @@
+{% extends 'uplift/base.html' %}
+{% load static %}
+
+{% block title %}Inventory{% endblock %}
+
+{% block content %}
+<div class="inventory-container">
+    <!-- Added Back to Dashboard Button -->
+    <div class="row mb-4">
+        <div class="col">
+            <a href="{% url 'dashboard' %}" class="btn btn-warning">
+                <i class="ion-arrow-left-c"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <h1>Inventory List</h1>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Date Added</th>
+                    <th>Date Updated</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in inventory_items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.category|default:"Uncategorized" }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.date_added|date:"Y-m-d H:i" }}</td>
+                    <td>{{ item.date_updated|date:"Y-m-d H:i" }}</td>
+                    <td>{{ item.notes|default:"N/A" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+<style>
+#main {
+        margin-left: 5em;  /* Adjust this value as needed */
+    }
+    body {
+        background-image: url("{% static 'uplift/images/dashbg.png' %}");
+        background-attachment: fixed;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    .inventory-container {
+        width: 80%;
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+    }
+
+    .table-responsive {
+        background-color: white;
+        border-radius: 5px;
+        padding: 20px;
+        margin-top: 1rem;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    /* Back to Dashboard Button Styles */
+    .btn-warning {
+        background-color: #f9cb32;
+        border-color: #f9cb32;
+        color: black;
+        transition: all 0.3s ease;
+    }
+
+    .btn-warning:hover {
+        background-color: black;
+        border-color: black;
+        color: #f9cb32;
+    }
+
+    /* Text alignment */
+    .col {
+        text-align: left;
+    }
+
+    h1 {
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+        color: #343a40;
+    }
+</style>
+{% endblock %}

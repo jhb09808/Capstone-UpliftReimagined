@@ -1,0 +1,196 @@
+{% extends "uplift/base.html" %}
+{% load static %}
+
+{% block title %}Uplift Van Routes{% endblock %}
+
+{% block content %}
+<style>
+    #main {
+        margin-left: 10em;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    .route-container {
+        width: 90%;
+        max-width: 1200px;
+        padding: 2rem;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(249, 203, 50, 0.3);
+    }
+    .route-section {
+        margin: 0 auto;
+        padding: 1rem;
+    }
+    .route-text {
+        font-size: 16px;
+        line-height: 1.6;
+        letter-spacing: 0.3px;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    .highlight {
+        color: #f9cb32;
+        font-weight: bold;
+    }
+    .section-title {
+        color: #f9cb32;
+        border-bottom: 2px solid #f9cb32;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+        font-size: 2em;
+    }
+    .route-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+    }
+    .route-table th, .route-table td {
+        border: 1px solid #f9cb32;
+        padding: 0.5rem;
+        text-align: left;
+        font-size: 14px;
+    }
+    .route-table th {
+        background-color: rgba(249, 203, 50, 0.2);
+        color: #f9cb32;
+    }
+    .photo-carousel {
+        max-width: 800px;
+        margin: 2rem auto;
+        position: relative;
+    }
+    .carousel-image {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+    .carousel-control {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(249, 203, 50, 0.7);
+        color: #000;
+        padding: 10px;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+    .carousel-control.prev {
+        left: 10px;
+    }
+    .carousel-control.next {
+        right: 10px;
+    }
+    @media (max-width: 768px) {
+        .route-container {
+            width: 95%;
+            padding: 1rem;
+        }
+        .route-text {
+            font-size: 14px;
+        }
+        .route-table th, .route-table td {
+            font-size: 12px;
+            padding: 0.3rem;
+        }
+    }
+</style>
+
+<div class="route-container">
+    <div class="route-section">
+        <h2 class="section-title">Where to meet Uplift vans?</h2>
+
+        <div class="route-text">
+            <p><span class="highlight">Updated March 13, 2024</span></p>
+            <p>Every Monday & Wednesday routes start at <span class="highlight">6:00 pm</span></p>
+            <p>Every Saturday routes start at <span class="highlight">5:00 pm</span></p>
+        </div>
+
+        <table class="route-table">
+            <tr>
+                <th>Stop #</th>
+                <th>West Route</th>
+                <th>Central Route</th>
+                <th>Midtown Route</th>
+                <th>East Route</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>RYERSON: 9th & Ryerson, NKC MO (at park/sign)</td>
+                <td>71 HWY & TROOST: 18th & Troost, KCMO (under hwy)</td>
+                <td>ST STEPHEN'S: Truman & Paseo, KCMO (parking lot)</td>
+                <td>CHESTNUT TFWY: near bottom of hill btwn Cliff Dr & train tracks</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>OLD PRICE CHOPPER: 43rd & State, KCKS (parking lot)</td>
+                <td>I-35 & PENNWAY (across from fire station)</td>
+                <td>ROCKHILL/VOLKER: 48th & Rockhill KCMO (at the bridge)</td>
+                <td>OLD QT: 6820 E Front St KCMO</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>KANSAS AVE: under 69 hwy/18th St overpass</td>
+                <td>6TH & BROADWAY KCMO (SE corner)</td>
+                <td>45TH & GARFIELD: North of Cleaver Blvd, east of Garfield</td>
+                <td>435 & INDEPENDENCE: 2 blocks west of 435 (near auto parts)</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>NEW! SHAWNEE PARK: approx 710 S Packard KCKS</td>
+                <td>FED PARK: Ilus Davis Park 10th & Oak KC MO</td>
+                <td>PICK & PULL: 8012 E Truman Rd KCMO</td>
+                <td>ST.JOHN & BENNINGTON: SE bottom of hill from Super Flea</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>BIKE BRIDGE: 3rd & Armstrong KCKS (parking lot)</td>
+                <td>TRAIN TRACKS: east of 1st & Cambell KCMO (Guinotte)</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>WEST BOTTOMS: I-670 & Genessee St KC MO (under hwy)</td>
+                <td>14TH & BENTON: just north of Truman (under I-70)</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>CHAVEZ: Avenida Chavez & Allen Rd, KC MO</td>
+                <td>SHEFFIELD PARK: 1100 Winchester Ave KCMO, near ball fields</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+
+        <div class="photo-carousel">
+            <img src="{% static 'uplift/images/route1.jpeg' %}" alt="Route Map 1" class="carousel-image" id="carouselImage">
+            <a href="#" class="carousel-control prev" onclick="changeImage(-1); return false;">&lt;</a>
+            <a href="#" class="carousel-control next" onclick="changeImage(1); return false;">&gt;</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const images = ['route1.jpeg', 'route2.jpeg'];
+    let currentImageIndex = 0;
+
+    function changeImage(direction) {
+        currentImageIndex += direction;
+        if (currentImageIndex < 0) {
+            currentImageIndex = images.length - 1;
+        } else if (currentImageIndex >= images.length) {
+            currentImageIndex = 0;
+        }
+        document.getElementById('carouselImage').src = "{% static 'uplift/images/' %}" + images[currentImageIndex];
+    }
+</script>
+{% endblock %}

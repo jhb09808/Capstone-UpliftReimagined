@@ -1,0 +1,494 @@
+{% extends 'uplift/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1>Welcome, {{ user.username }}!</h1>
+    <p>Here is an overview of your activities and quick links:</p>
+    <div class="dashboard-links">
+        <a href="{% url 'view_inventory' %}" class="dashboard-link">View Inventory</a>
+        <a href="{% url 'profile' %}" class="dashboard-link">Profile</a>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6 calendar-container">
+                <h3>Shift Calendar</h3>
+                <div id="calendar"></div>
+                <div class="volunteers-container mt-4">
+                    <h3>Volunteers for Selected Day</h3>
+                    <ul id="volunteer-list" class="list-group">
+                        <!-- Volunteers will be populated here -->
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="shift-container">
+                    <h3>Apply for Shift</h3>
+                   <form id="applyShiftForm" method="post" action="{% url 'apply_for_shift' %}">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="shiftStartTime">Start Time:</label>
+        <input type="datetime-local"
+               class="form-control"
+               id="shiftStartTime"
+               name="shiftStartTime"
+               required>
+    </div>
+    <div class="form-group">
+        <label for="shiftEndTime">End Time:</label>
+        <input type="datetime-local"
+               class="form-control"
+               id="shiftEndTime"
+               name="shiftEndTime"
+               required>
+    </div>
+    <div class="form-group">
+        <label for="shiftDescription">Description:</label>
+        <input type="text"
+               class="form-control"
+               id="shiftDescription"
+               name="shiftDescription"
+               placeholder="Ex. Driver, Meal prep, Warehouse Work"
+               required>
+    </div>
+    <button type="submit" class="btn btn-primary">Apply</button>
+</form>
+                </div>
+                <div class="user-shifts-container mt-4">
+                    <h3>Your Shifts</h3>
+                    <ul id="user-shifts-list" class="list-group">
+                        <!-- User shifts will be populated here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if is_admin %}
+    <h2>Admin Actions</h2>
+    <div class="dashboard-links">
+        <a href="{% url 'manage_users' %}" class="dashboard-link">Manage Users</a>
+        <a href="{% url 'manage_inventory' %}" class="dashboard-link">Manage Inventory</a>
+        <a href="{% url 'confirm_shifts' %}" class="dashboard-link">Confirm Shifts</a>
+        <a href="{% url 'generate_reports' %}" class="dashboard-link">Generate Reports</a>
+    </div>
+    {% endif %}
+</div>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+
+<style>
+    body {
+        background-image: url("{% static 'uplift/images/dashbg.png' %}");
+        background-attachment: fixed;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        height: 100vh;
+        overflow-y: auto;
+    }
+    #main {
+        margin-left: 5em;  /* Adjust this value as needed */
+    }
+    .dashboard-container {
+        padding: 2rem;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.4);  /* Add a semi-transparent white background */
+        border-radius: 10px;
+        margin: 2rem;
+    }
+    .dashboard-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    .dashboard-link {
+        display: block;
+        padding: 1rem 2rem;
+        border-radius: 0.5rem;
+        background-color: #f9cb32;
+        color: black;
+        text-decoration: none;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        font-weight: bold;
+    }
+    .dashboard-link:hover {
+        background-color: black;
+        color: #f9cb32;
+    }
+    .container-fluid {
+        padding: 20px;
+    }
+    .calendar-container, .shift-container, .user-shifts-container, .volunteers-container {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: white;
+    }
+    .calendar-container {
+        height: 100%;
+    }
+    #calendar {
+        height: calc(100% - 40px);
+    }
+    .user-shifts-container, .volunteers-container {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    .shift-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .shift-actions {
+        display: flex;
+        gap: 10px;
+    }
+    .btn-edit, .btn-delete {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+</style>
+<div class="modal fade" id="editShiftModal" tabindex="-1" role="dialog" aria-labelledby="editShiftModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editShiftModalLabel">Edit Shift</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editShiftForm">
+                    <input type="hidden" id="editShiftId" name="shiftId">
+                    <div class="form-group">
+                        <label for="editShiftStartTime">Start Time:</label>
+                        <input type="datetime-local" class="form-control" id="editShiftStartTime" name="shiftStartTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editShiftEndTime">End Time:</label>
+                        <input type="datetime-local" class="form-control" id="editShiftEndTime" name="shiftEndTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editShiftDescription">Description:</label>
+                        <input type="text" class="form-control" id="editShiftDescription" name="shiftDescription" placeholder="Ex. Driver, Meal prep, Warehouse Work" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveShiftChanges">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function fetchUserShifts() {
+    $.ajax({
+        url: "{% url 'get_shifts' %}",
+        method: 'GET',
+        success: function(data) {
+            if (data.shifts && Array.isArray(data.shifts)) {
+                $('#user-shifts-list').empty();
+                data.shifts.forEach(function(shift) {
+                    let actionButtons = '';
+                    if (shift.status.toLowerCase() === 'pending') {
+                        actionButtons = `
+                            <button class="btn btn-sm btn-primary btn-edit" data-shift-id="${shift.id}">Edit</button>
+                            <button class="btn btn-sm btn-danger btn-delete" data-shift-id="${shift.id}">Delete</button>
+                        `;
+                    } else if (shift.status.toLowerCase() === 'approved') {
+                        actionButtons = `
+                            <button class="btn btn-sm btn-primary btn-edit" data-shift-id="${shift.id}">Edit</button>
+                            <button class="btn btn-sm btn-warning btn-cancel" data-shift-id="${shift.id}">Cancel</button>
+                        `;
+                    }
+
+                    var shiftItem = `
+                        <li class="list-group-item shift-item">
+                            <div>
+                                <strong>${moment.utc(shift.start).local().format('MMMM D, YYYY h:mm A')} - ${moment.utc(shift.end).local().format('h:mm A')}</strong><br>
+                                ${shift.description}<br>
+                                Status: <span class="badge badge-${getStatusClass(shift.status)}">${shift.status}</span>
+                            </div>
+                            <div class="shift-actions">
+                                ${actionButtons}
+                            </div>
+                        </li>
+                    `;
+                    $('#user-shifts-list').append(shiftItem);
+                });
+            } else {
+                console.error('Invalid shift data received');
+            }
+        },
+        error: function(error) {
+            console.error('Error fetching user shifts:', error);
+        }
+    });
+}
+
+function getStatusClass(status) {
+    switch(status.toLowerCase()) {
+        case 'pending': return 'warning';
+        case 'approved': return 'success';
+        case 'cancellation pending': return 'info';
+        case 'cancelled': return 'danger';
+        default: return 'secondary';
+    }
+}
+
+function getStatusColor(status) {
+    switch(status) {
+        case 'pending': return 'orange';
+        case 'approved': return 'green';
+        case 'cancelled': return 'red';
+        default: return '';
+    }
+}
+
+function updateCalendar() {
+    $('#calendar').fullCalendar('refetchEvents');
+}
+
+$(document).ready(function() {
+    fetchUserShifts();
+
+    $('#calendar').fullCalendar({
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay'
+        },
+        height: 'auto',
+        editable: true,
+        events: function(start, end, timezone, callback) {
+            $.ajax({
+                url: "{% url 'get_shifts' %}",
+                dataType: 'json',
+                success: function(data) {
+                    var events = [];
+                    if (data.shifts) {
+                        events = data.shifts.map(function(shift) {
+                            return {
+                                title: shift.description,
+                                start: shift.start,
+                                end: shift.end,
+                                className: shift.status.toLowerCase()
+                            };
+                        });
+                    }
+                    callback(events);
+                },
+                error: function(error) {
+                    console.error('Error fetching shifts:', error);
+                }
+            });
+        },
+        eventRender: function(event, element) {
+            element.css('background-color', getStatusColor(event.className));
+        },
+        dayClick: function(date, jsEvent, view) {
+            $('#volunteer-list').empty();
+            $.ajax({
+                url: "{% url 'get_volunteers' %}",
+                data: {
+                    date: date.format()
+                },
+                success: function(data) {
+                    if (data.volunteers && data.volunteers.length > 0) {
+                        data.volunteers.forEach(function(volunteer) {
+                            $('#volunteer-list').append('<li class="list-group-item">' + volunteer.name + '</li>');
+                        });
+                    } else {
+                        $('#volunteer-list').append('<li class="list-group-item">No volunteers for this day</li>');
+                    }
+                },
+                error: function(error) {
+                    console.error('Error fetching volunteers:', error);
+                }
+            });
+        }
+    });
+
+    $(document).ready(function() {
+    // Set minimum date for datetime-local inputs
+    function setMinDateTime() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+
+        const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+        $('#shiftStartTime').attr('min', minDateTime);
+        $('#shiftEndTime').attr('min', minDateTime);
+    }
+
+    // Call on page load
+    setMinDateTime();
+
+    // Update min datetime every minute
+    setInterval(setMinDateTime, 60000);
+
+    $('#applyShiftForm').submit(function(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+
+        // Validate dates before submitting
+        const startTime = new Date(formData.get('shiftStartTime'));
+        const endTime = new Date(formData.get('shiftEndTime'));
+        const now = new Date();
+
+        if (startTime < now) {
+            alert('Cannot create shifts for past dates.');
+            return;
+        }
+
+        if (endTime <= startTime) {
+            alert('End time must be after start time.');
+            return;
+        }
+
+        $.ajax({
+            url: "{% url 'apply_for_shift' %}",
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                console.log('Success response:', response);
+                $('#applyShiftForm')[0].reset();
+                updateCalendar();
+                fetchUserShifts();
+                alert(response.message || 'Shift applied successfully!');
+            },
+            error: function(xhr, status, error) {
+                console.log('Error details:', {
+                    status: status,
+                    error: error,
+                    response: xhr.responseText
+                });
+                alert(xhr.responseJSON?.message || 'Error applying for shift. Please try again.');
+            }
+        });
+    });
+});
+
+$(document).on('click', '.btn-edit', function() {
+    var shiftId = $(this).data('shift-id');
+    var shiftItem = $(this).closest('.shift-item');
+
+    // Extract and format times
+    var startDateTime = shiftItem.find('strong').text().split(' - ')[0];
+    var endTime = shiftItem.find('strong').text().split(' - ')[1];
+    var startTime = moment(startDateTime, 'MMMM D, YYYY h:mm A').format('YYYY-MM-DDTHH:mm');
+    var endDateTime = moment(startDateTime, 'MMMM D, YYYY').format('YYYY-MM-DD') + ' ' + endTime;
+    var endTimeFormatted = moment(endDateTime, 'YYYY-MM-DD h:mm A').format('YYYY-MM-DDTHH:mm');
+
+    // Extract description by getting the text between the <br> tags
+    var description = shiftItem.find('div')
+        .html()
+        .split('<br>')[1]
+        .split('<br>')[0]
+        .trim();
+
+    // Populate the modal form
+    $('#editShiftId').val(shiftId);
+    $('#editShiftStartTime').val(startTime);
+    $('#editShiftEndTime').val(endTimeFormatted);
+    $('#editShiftDescription').val(description);
+    $('#editShiftModal').modal('show');
+});
+
+$('#saveShiftChanges').click(function() {
+    var shiftId = $('#editShiftId').val();
+    var formData = new FormData();
+    formData.append('shiftStartTime', $('#editShiftStartTime').val());
+    formData.append('shiftEndTime', $('#editShiftEndTime').val());
+    formData.append('shiftDescription', $('#editShiftDescription').val());
+
+    $.ajax({
+        url: `/uplift/shift/${shiftId}/edit/`,
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+            $('#editShiftModal').modal('hide');
+            updateCalendar();
+            fetchUserShifts();
+            alert('Shift updated successfully');
+        },
+        error: function(error) {
+            console.error('Error editing shift:', error);
+            alert('Error editing shift');
+        }
+    });
+});
+
+    $(document).on('click', '.btn-cancel', function() {
+    var shiftId = $(this).data('shift-id');
+    if (confirm('Are you sure you want to cancel this shift?')) {
+        $.ajax({
+            url: `/uplift/shift/${shiftId}/cancel/`,
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                updateCalendar();
+                fetchUserShifts();
+                alert('Shift cancellation request submitted successfully');
+            },
+            error: function(error) {
+                console.error('Error cancelling shift:', error);
+                alert('Error cancelling shift');
+            }
+        });
+    }
+});
+$(document).on('click', '.btn-delete', function() {
+    var shiftId = $(this).data('shift-id');
+    if (confirm('Are you sure you want to delete this shift?')) {
+        $.ajax({
+            url: `/uplift/shift/${shiftId}/delete/`,
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                updateCalendar();
+                fetchUserShifts();
+                alert('Shift deleted successfully');
+            },
+            error: function(error) {
+                console.error('Error deleting shift:', error);
+                alert('Error deleting shift');
+            }
+        });
+    }
+});
+});
+</script>
+{% endblock %}

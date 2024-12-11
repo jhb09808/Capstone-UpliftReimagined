@@ -1,0 +1,168 @@
+{% extends "uplift/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    #main {
+        margin-left: 15em;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    .contact-container {
+        width: 80%;
+        max-width: 1000px;
+        padding: 2rem;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(249, 203, 50, 0.3);
+    }
+    .contact-section {
+        margin: 0 auto;
+        padding: 1rem;
+    }
+    .contact-text {
+        font-size: 16px;
+        line-height: 1.6;
+        letter-spacing: 0.3px;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    .highlight {
+        color: #f9cb32;
+        font-weight: bold;
+    }
+    .section-title {
+        color: #f9cb32;
+        border-bottom: 2px solid #f9cb32;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+        font-size: 2em;
+    }
+    .contact-info {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.5rem;
+        margin: 1.5rem 0;
+    }
+    .contact-card {
+        background-color: rgba(249, 203, 50, 0.1);
+        border: 2px solid #f9cb32;
+        border-radius: 15px;
+        padding: 1.5rem;
+        width: 100%;
+        max-width: 300px;
+    }
+    .contact-card h3 {
+        color: #f9cb32;
+        margin-bottom: 1rem;
+        font-size: 1.3em;
+    }
+    .contact-card p {
+        font-size: 1em;
+        line-height: 1.5;
+        margin-bottom: 0.5rem;
+    }
+    .contact-email {
+        color: #f9cb32;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    .contact-email:hover {
+        color: #fff;
+        text-decoration: underline;
+    }
+    .map-container {
+        margin: 1.5rem auto;
+        padding: 1rem;
+        border: 2px solid #f9cb32;
+        border-radius: 15px;
+        overflow: hidden;
+        max-width: 100%;
+    }
+    .map-container iframe {
+        width: 100%;
+        height: 300px;
+        border: none;
+        border-radius: 10px;
+    }
+    .note-section {
+        font-style: italic;
+        color: #f9cb32;
+        margin: 1.5rem 0;
+        padding: 1rem;
+        font-size: 0.9em;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+    @media (max-width: 768px) {
+        .contact-container {
+            width: 95%;
+            padding: 1rem;
+        }
+        .contact-text {
+            font-size: 14px;
+        }
+        .contact-card {
+            max-width: 100%;
+        }
+    }
+</style>
+
+<div class="contact-container">
+    <div class="contact-section">
+        <h2 class="section-title">Contact & Directions</h2>
+
+        <div class="contact-info">
+            <!-- Email Contact Card -->
+            <div class="contact-card">
+                <h3>Contact Information</h3>
+                <p>
+                    <strong>Volunteer Coordinator:</strong><br>
+                    <a href="mailto:volunteer@uplift.org" class="contact-email">volunteer@uplift.org</a>
+                </p>
+                <p>
+                    <strong>General Email:</strong><br>
+                    <a href="mailto:info@uplift.org" class="contact-email">info@uplift.org</a>
+                </p>
+            </div>
+
+            <!-- Mailing Address Card -->
+            <div class="contact-card">
+                <h3>Mailing Address</h3>
+                <p>
+                    PO Box 270175<br>
+                    Kansas City, MO 64127
+                </p>
+            </div>
+
+            <!-- Warehouse Address Card -->
+            <div class="contact-card">
+                <h3>Uplift Warehouse</h3>
+                <p>
+                    1516 Prospect Ave.<br>
+                    Kansas City, MO 64127
+                </p>
+            </div>
+        </div>
+
+        <div class="note-section">
+            <p>Please do not ship parcels or packages to the warehouse.</p>
+        </div>
+
+        <!-- Google Maps Integration -->
+        <div class="map-container">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3097.5741!2d-94.5567!3d39.0912!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87c0f0e8b8b8b8b8%3A0x8b8b8b8b8b8b8b8b!2s1516%20Prospect%20Ave%2C%20Kansas%20City%2C%20MO%2064127!5e0!3m2!1sen!2sus!4v1621234567890!5m2!1sen!2sus"
+                allowfullscreen=""
+                loading="lazy">
+            </iframe>
+        </div>
+    </div>
+</div>
+{% endblock %}

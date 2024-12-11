@@ -1,0 +1,134 @@
+{% extends 'uplift/base.html' %}
+{% load static %}
+{% load socialaccount %}
+
+{% block title %}Login{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'uplift/css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<style>
+    .login-box {
+        background: rgba(0, 0, 0, 0.7);
+        padding: 40px;
+        border-radius: 10px;
+        border: 2px solid #f9cb32;
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+        margin: 40px auto;
+    }
+    .login-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: white;
+    }
+    .form-group {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .form-label {
+        font-size: 20px;
+        margin-bottom: 5px;
+        color: white;
+        display: block;
+    }
+    .form-control {
+        width: 100%;
+        max-width: 300px;
+        padding: 10px;
+        border: 1px solid #f9cb32;
+        border-radius: 5px;
+        background-color: #f9cb32;
+        color: black;
+        text-align: center;
+        margin: 0 auto;
+    }
+    .submit-button {
+        width: 100%;
+        max-width: 300px;
+        padding: 10px;
+        background-color: #f9cb32;
+        border: none;
+        border-radius: 5px;
+        color: black;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background-color 0.3s;
+    }
+    .submit-button:hover {
+        background-color: #e5b72c;
+    }
+    .social-login {
+        margin-top: 20px;
+    }
+    .social-login a {
+        display: block;
+        background-color: #f9cb32;
+        color: black;
+        padding: 10px;
+        text-align: center;
+        border-radius: 5px;
+        font-weight: bold;
+        text-decoration: none;
+        margin: 5px 0;
+        transition: background-color 0.3s;
+    }
+    .social-login a:hover {
+        background-color: #e5b72c;
+    }
+    .social-login img {
+        vertical-align: middle;
+        margin-right: 10px;
+    }
+    .error-box {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-align: left;
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-box">
+        <h2>Log in</h2>
+
+        <form method="post" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username" class="form-label">Username</label>
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                <label for="id_password" class="form-label">Password</label>
+                {{ form.password }}
+            </div>
+
+            {% if form.errors or form.non_field_errors %}
+                <div class="error-box">
+                    {% for field in form %}
+                        {{ field.errors }}
+                    {% endfor %}
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <button type="submit" class="submit-button">Submit</button>
+        </form>
+
+        <h1>or</h1>
+        {% providers_media_js %}
+        <div class="social-login">
+            <a href="{% provider_login_url "google" method="oauth2" %}">
+                <img src="{% static 'uplift/images/google.png' %}" alt="Google logo" width="20px">
+                Log in with Google
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

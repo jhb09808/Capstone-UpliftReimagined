@@ -1,0 +1,181 @@
+{% extends 'uplift/base.html' %}
+{% load static %}
+
+{% block title %}Donate{% endblock %}
+
+{% block content %}
+<style>
+    #main {
+        margin-left: 5em;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    .donate-container {
+        width: 80%;
+        max-width: 1000px;
+        padding: 2rem;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(249, 203, 50, 0.3);
+    }
+    .donate-section {
+        margin: 0 auto;
+        padding: 1rem;
+    }
+    .donate-text {
+        font-size: 16px;
+        line-height: 1.6;
+        letter-spacing: 0.3px;
+        margin-bottom: 1.5rem;
+        text-align: justify;
+    }
+    .highlight {
+        color: #f9cb32;
+        font-weight: bold;
+    }
+    .section-title {
+        color: #f9cb32;
+        border-bottom: 2px solid #f9cb32;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+        font-size: 2em;
+    }
+    .donation-options {
+        background-color: rgba(249, 203, 50, 0.1);
+        border: 2px solid #f9cb32;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+    }
+    .donation-list {
+        text-align: left;
+        list-style-type: none;
+        padding-left: 0;
+    }
+    .donation-list li {
+        margin-bottom: 0.5rem;
+    }
+    .donation-list li::before {
+        content: "•";
+        color: #f9cb32;
+        display: inline-block;
+        width: 1em;
+        margin-left: -1em;
+    }
+    .logo-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 1rem auto;
+        box-shadow: 0 0 10px rgba(249, 203, 50, 0.3);
+        max-width: 250px;
+    }
+    .logo {
+        max-width: 200px;
+        max-height: 100px;
+        object-fit: contain;
+    }
+    .centered-image {
+        display: flex;
+        justify-content: center;
+        margin: 1rem 0;
+    }
+    @media (max-width: 768px) {
+        .donate-container {
+            width: 95%;
+            padding: 1rem;
+        }
+        .donate-text {
+            font-size: 14px;
+        }
+    }
+    .paypal-logo {
+        max-width: 400px;
+        max-height: 200px;
+        object-fit: contain;
+        margin-bottom: 0px; /* Reduced from 15px to 10px */
+        margin-top: -50px;
+    }
+        .paypal-button form {
+        margin-top: -50px; /* Added to reduce space */
+        vertical-align: top;
+    }
+</style>
+
+<div class="donate-container">
+    <div class="donate-section">
+        <h2 class="section-title">Make a Donation</h2>
+
+        <div class="donate-text">
+            <p><span class="highlight">Support the work of Uplift!</span> Uplift Organization, Inc. is a registered 501(c)3 non-profit tax exempt organization under Internal Revenue Service Code. Contributions of goods are deductible for income tax purposes to the extent allowed by law.</p>
+        </div>
+
+<div class="donation-options">
+    <h3 class="highlight">Online Giving</h3>
+    <p>For online giving, click the PayPal button below. Please consider setting up a recurring monthly donation to Uplift!</p>
+    <div class="paypal-button">
+        <div class="logo-container">
+            <img src="{% static 'uplift/images/paypal.webp' %}" alt="PayPal Logo" class="paypal-logo">
+            <form action="https://www.paypal.com/donate" method="post" target="_blank">
+                <input type="hidden" name="hosted_button_id" value="HE5PBDKV66QJN" />
+                <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+                <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+            </form>
+        </div>
+    </div>
+</div>
+
+        <div class="donation-options">
+            <h3 class="highlight">Donate Items to Uplift</h3>
+            <p>Look at our lists below of items that we need and bring them to Uplift.</p>
+            <h4>Drop Off Donations At Our Warehouse:</h4>
+            <p>1516 Prospect Ave. Kansas City MO 64127</p>
+            <p>To drop off donations, please pull up to the white overhead doors off the alley. If the doors are closed, please honk or knock and we will open them.</p>
+            <h4>Drop Off Hours:</h4>
+            <ul class="donation-list">
+                <li>Monday 4:30-6:00</li>
+                <li>Wednesday 4:30-6:00</li>
+                <li>Saturday 9:00-12:00 & 3:30-5:00</li>
+            </ul>
+        </div>
+
+        <div class="donation-options">
+            <h3 class="highlight">Order from Amazon</h3>
+            <p>To donate items from our Amazon wish lists, please click the link below:</p>
+            <a href="https://docs.google.com/document/u/0/d/1HdDfieFAz_DweVP2tztMIOyeGL6OH1_hQ41IY5bIJnI/mobilebasic" target="_blank" rel="noopener noreferrer">
+                <div class="logo-container">
+                    <img src="{% static 'uplift/images/amazon.png' %}" alt="Amazon Logo" class="logo">
+                </div>
+            </a>
+        </div>
+
+    <div class="donate-text">
+        <p>Uplift would like to thank our many hundreds of donors. Without your generosity, we would not be able to fulfill our mission of bringing care and compassion to the homeless.</p>
+        <p>Giving the Basics™ has generously donated many toiletry items to the homeless, including toilet paper and razors.</p>
+        <a href="https://givingthebasics.org/" target="_blank" rel="noopener noreferrer">
+            <div class="logo-container">
+                <img src="{% static 'uplift/images/givingbasics.png' %}" alt="Giving the Basics Logo" class="logo">
+            </div>
+        </a>
+    </div>
+
+        <div class="donation-options">
+            <h3 class="highlight">Contact Information</h3>
+            <p>Volunteer Coordinator Email: <a href="mailto:volunteer@uplift.org" class="highlight">volunteer@uplift.org</a></p>
+            <p>General Email: <a href="mailto:info@uplift.org" class="highlight">info@uplift.org</a></p>
+            <h4>Uplift Warehouse Address</h4>
+            <p>1516 Prospect Ave.<br>Kansas City, MO 64127</p>
+            <p><em>(please do not ship parcels or packages to the warehouse)</em></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

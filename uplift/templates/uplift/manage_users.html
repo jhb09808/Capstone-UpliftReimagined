@@ -1,0 +1,393 @@
+{% extends 'uplift/base.html' %}
+{% load static %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block content %}
+<script>
+    window.CSRF_TOKEN = "{{ csrf_token }}";
+</script>
+
+<div class="dashboard-container">
+    <div class="row mb-4">
+        <div class="col">
+            <a href="{% url 'dashboard' %}" class="btn btn-warning">
+                <i class="ion-arrow-left-c"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="report-section">
+        <h2>Manage Users</h2>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr id="user-{{ user.id }}">
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.phone_number|default:"Not Provided" }}</td>
+                        <td>
+                            {% if user.is_superuser %}
+                                <span class="badge badge-primary">Admin</span>
+                            {% elif user.is_active %}
+                                <span class="badge badge-success">Active</span>
+                            {% else %}
+                                <span class="badge badge-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not user.is_superuser %}
+                                <div class="user-actions">
+                                    {% if user.is_active %}
+                                        <button class="btn" onclick="toggleActive({{ user.id }}, false)">Deactivate</button>
+                                    {% else %}
+                                        <button class="btn" onclick="toggleActive({{ user.id }}, true)">Activate</button>
+                                    {% endif %}
+
+                                    {% if user.is_staff %}
+                                        <button class="btn" onclick="toggleAdmin({{ user.id }}, false)">Remove Admin</button>
+                                    {% else %}
+                                        <button class="btn" onclick="toggleAdmin({{ user.id }}, true)">Make Admin</button>
+                                    {% endif %}
+
+                                    <button class="btn btn-delete" data-user-id="{{ user.id }}">Delete</button>
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    #main {
+        margin-left: 5em;
+    }
+    body {
+        background-image: url("{% static 'uplift/images/dashbg.png' %}");
+        background-attachment: fixed;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    .dashboard-container {
+        padding: 1.5rem;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.6);
+        border-radius: 10px;
+        margin: 0 auto;
+        width: 80%;
+        max-width: 1400px;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .report-section {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-responsive {
+        background-color: white;
+        border-radius: 10px;
+        margin-top: 20px;
+        overflow: hidden;
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .table {
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+
+    .thead-dark th {
+        background-color: #343a40;
+        color: white;
+        border: none;
+        padding: 15px;
+    }
+
+    .table td {
+        padding: 12px 15px;
+        vertical-align: middle;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(249, 203, 50, 0.1);
+    }
+
+    .badge {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        border-radius: 20px;
+    }
+
+    .badge-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .badge-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-warning {
+        background-color: #f9cb32;
+        border-color: #f9cb32;
+        color: black;
+        transition: all 0.3s ease;
+    }
+
+    .btn-warning:hover {
+        background-color: black;
+        border-color: black;
+        color: #f9cb32;
+    }
+
+    .user-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .user-actions .btn {
+        padding: 6px 12px;
+        font-size: 0.875rem;
+        border-radius: 5px;
+        min-width: 100px;
+        margin: 2px;
+        transition: all 0.3s ease;
+    }
+
+    /* Keep your original button colors */
+    .user-actions .btn[onclick*="toggleActive"][onclick*="true"] {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .user-actions .btn[onclick*="toggleActive"][onclick*="false"] {
+        background-color: black;
+        color: #f9cb32;
+    }
+
+    .user-actions .btn[onclick*="toggleAdmin"][onclick*="true"] {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .user-actions .btn[onclick*="toggleAdmin"][onclick*="false"] {
+        background-color: #fd7e14;
+        color: white;
+    }
+
+    .user-actions .btn-delete {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    @media print {
+        body {
+            background: none;
+        }
+        .dashboard-container {
+            margin: 0;
+            padding: 20px;
+            background: none;
+        }
+        .btn {
+            display: none !important;
+        }
+        .report-section {
+            margin: 20px 0;
+            box-shadow: none;
+        }
+        .table {
+            border: 1px solid #dee2e6;
+        }
+        .thead-dark th {
+            background-color: #f8f9fa !important;
+            color: #000 !important;
+        }
+        .table td {
+            border: 1px solid #dee2e6;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-container {
+            margin: 1rem;
+            padding: 1rem;
+        }
+        .user-actions {
+            flex-direction: column;
+        }
+        .user-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // CSRF Token Setup
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    });
+
+    // Toggle Active Status
+    window.toggleActive = function(userId, makeActive) {
+        const action = makeActive ? 'activate' : 'deactivate';
+        const confirmMessage = makeActive ?
+            'Are you sure you want to activate this user?' :
+            'Are you sure you want to deactivate this user?';
+
+        if (confirm(confirmMessage)) {
+            const button = $(`.btn[onclick*="toggleActive"][data-user-id="${userId}"]`);
+            button.prop('disabled', true).css('opacity', '0.7');
+
+            $.ajax({
+                url: `/uplift/user/${userId}/${action}/`,
+                method: 'POST',
+                data: { csrfmiddlewaretoken: window.CSRF_TOKEN },
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert(response.message || `Could not ${action} user`);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(`Error ${action}ing user:`, error);
+                    alert(`Error ${action}ing user`);
+                },
+                complete: function() {
+                    button.prop('disabled', false).css('opacity', '1');
+                }
+            });
+        }
+    };
+
+    // Toggle Admin Status
+    window.toggleAdmin = function(userId, makeAdmin) {
+        const action = makeAdmin ? 'make_admin' : 'remove_admin';
+        const confirmMessage = makeAdmin ?
+            'Are you sure you want to make this user an admin?' :
+            'Are you sure you want to remove admin privileges from this user?';
+
+        if (confirm(confirmMessage)) {
+            const button = $(`.btn[onclick*="toggleAdmin"][data-user-id="${userId}"]`);
+            button.prop('disabled', true).css('opacity', '0.7');
+
+            $.ajax({
+                url: `/uplift/user/${userId}/${action}/`,
+                method: 'POST',
+                data: { csrfmiddlewaretoken: window.CSRF_TOKEN },
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert(response.message || `Could not ${action.replace('_', ' ')}`);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(`Error updating admin status:`, error);
+                    alert(`Error updating admin status`);
+                },
+                complete: function() {
+                    button.prop('disabled', false).css('opacity', '1');
+                }
+            });
+        }
+    };
+
+    // Delete User
+    $(document).on('click', '.btn-delete', function(e) {
+        e.preventDefault();
+        const userId = $(this).data('user-id');
+        const userName = $(this).closest('tr').find('td:first').text();
+
+        if (confirm(`Are you sure you want to delete user "${userName}"? This action cannot be undone.`)) {
+            const button = $(this);
+            button.prop('disabled', true).css('opacity', '0.7');
+
+            $.ajax({
+                url: `/uplift/user/${userId}/delete/`,
+                method: 'POST',
+                data: { csrfmiddlewaretoken: window.CSRF_TOKEN },
+                success: function(response) {
+                    if (response.success) {
+                        $(`#user-${userId}`).fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    } else {
+                        alert(response.message || 'Could not delete user');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error deleting user:', error);
+                    alert('Error deleting user');
+                },
+                complete: function() {
+                    button.prop('disabled', false).css('opacity', '1');
+                }
+            });
+        }
+    });
+
+    // Disable buttons during AJAX requests
+    $(document).ajaxStart(function() {
+        $('.btn').prop('disabled', true);
+    }).ajaxStop(function() {
+        $('.btn').prop('disabled', false);
+    });
+});
+</script>
+{% endblock %}

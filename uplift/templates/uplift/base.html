@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uplift.org</title>
+    <link rel="stylesheet" href="path/to/bootstrap.css">
+    <link rel="stylesheet" href="{% static 'uplift/css/styles.css' %}">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <link rel="icon" type="image/x-icon" href="{% static 'uplift/favicon.ico' %}">
+</head>
+<style>
+html {
+    background: url("{% static 'uplift/images/van.jpg' %}") no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    height: 100vh; /* Ensure the body takes full viewport height */
+    overflow-y: auto; /* Allow scrolling within the body */
+}
+</style>
+<body>
+<!-- Navbar -->
+<nav id="navbar">
+  <ul class="navbar-items flexbox-col">
+    <li class="navbar-logo flexbox-left">
+      <!-- Use an <img> tag to include the logo image -->
+      <a class="navbar-item-inner flexbox" href="{% url 'home' %}">
+        <img src="{% static 'uplift/images/logo.png' %}" alt="Logo" class="navbar-logo-img">
+      </a>
+    </li>
+    <li class="navbar-item flexbox-left">
+      <a href="{% url 'home' %}" class="navbar-item-inner flexbox-left">
+        <div class="navbar-item-inner-icon-wrapper flexbox">
+          <ion-icon name="home-outline"></ion-icon>
+        </div>
+        <span class="link-text">Home</span>
+      </a>
+    </li>
+    </li>
+    <li class="navbar-item flexbox-left">
+      <a href="{% url 'about' %}" class="navbar-item-inner flexbox-left">
+        <div class="navbar-item-inner-icon-wrapper flexbox">
+          <ion-icon name="bulb-outline"></ion-icon>
+        </div>
+        <span class="link-text">About Us</span>
+      </a>
+    </li>
+    </li>
+    <li class="navbar-item flexbox-left">
+      <a href="{% url 'contact' %}" class="navbar-item-inner flexbox-left">
+        <div class="navbar-item-inner-icon-wrapper flexbox">
+          <ion-icon name="call-outline"></ion-icon>
+        </div>
+        <span class="link-text">Contact & Direction</span>
+      </a>
+    </li>
+    </li>
+    <li class="navbar-item flexbox-left">
+      <a href="{% url 'route' %}" class="navbar-item-inner flexbox-left">
+        <div class="navbar-item-inner-icon-wrapper flexbox">
+          <ion-icon name="map-outline"></ion-icon>
+        </div>
+        <span class="link-text">Uplift Vans Route</span>
+      </a>
+    </li>
+    <li class="navbar-item flexbox-left">
+      <a href="{% url 'donate' %}" class="navbar-item-inner flexbox-left">
+        <div class="navbar-item-inner-icon-wrapper flexbox">
+          <ion-icon name="heart-outline"></ion-icon>
+        </div>
+        <span class="link-text">Donate</span>
+      </a>
+    </li>
+    {% if user.is_authenticated %}
+      <li class="navbar-item flexbox-left">
+        <a href="{% url 'dashboard' %}" class="navbar-item-inner flexbox-left">
+          <div class="navbar-item-inner-icon-wrapper flexbox">
+            <ion-icon name="grid-outline"></ion-icon>
+          </div>
+          <span class="link-text">Dashboard</span>
+        </a>
+      </li>
+      <li class="navbar-item flexbox-left">
+        <a href="{% url 'logout' %}" class="navbar-item-inner flexbox-left">
+          <div class="navbar-item-inner-icon-wrapper flexbox">
+            <ion-icon name="log-out-outline"></ion-icon>
+          </div>
+          <span class="link-text">Logout</span>
+        </a>
+      </li>
+    {% else %}
+      <li class="navbar-item flexbox-left">
+        <a href="{% url 'register' %}" class="navbar-item-inner flexbox-left register">
+          <div class="navbar-item-inner-icon-wrapper flexbox">
+            <ion-icon name="person-add-outline"></ion-icon>
+          </div>
+          <span class="link-text">Become a Volunteer!</span>
+        </a>
+      </li>
+      {% if not request.resolver_match.url_name == 'login' %}
+        <li class="navbar-item flexbox-left">
+          <a href="{% url 'login' %}" class="navbar-item-inner flexbox-left">
+            <div class="navbar-item-inner-icon-wrapper flexbox">
+              <ion-icon name="log-in-outline"></ion-icon>
+            </div>
+            <span class="link-text">Login</span>
+          </a>
+        </li>
+      {% endif %}
+    {% endif %}
+  </ul>
+
+  <!-- The copyright text that will change based on navbar state -->
+  <p id="copyright-text" class="navbar-footer-text">&copy; 2024 Uplift. All rights reserved.</p>
+</nav>
+
+<!-- Main Content -->
+<main id="main" class="flexbox-col">
+  {% block content %}
+  <h2>Lorem ipsum!</h2>
+  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eum corporis, rerum doloremque iste sed voluptates omnis molestias molestiae animi recusandae labore sit amet delectus ad necessitatibus laudantium qui! Magni quisquam illum quaerat necessitatibus sint quibusdam perferendis! Aut ipsam cumque deleniti error perspiciatis iusto accusamus consequuntur assumenda. Obcaecati minima sed natus?</p>
+  {% endblock %}
+</main>
+</body>
+</html>

@@ -1,0 +1,336 @@
+{% extends 'uplift/base.html' %}
+{% load static %}
+
+{% block title %}Manage Inventory{% endblock %}
+
+{% block content %}
+<script>
+    window.CSRF_TOKEN = "{{ csrf_token }}";
+</script>
+<!-- Edit Inventory Modal - Moved to top of content -->
+<div class="modal fade" id="editInventoryModal" tabindex="-1" role="dialog" aria-labelledby="editInventoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editInventoryModalLabel">Edit Inventory Item</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editInventoryForm">
+                    <input type="hidden" id="editInventoryId" name="itemId">
+                    <div class="form-group">
+                        <label for="editItemName">Item Name:</label>
+                        <input type="text" class="form-control" id="editItemName" name="itemName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editItemCategory">Category:</label>
+                        <select class="form-control" id="editItemCategory" name="itemCategory" required>
+                            <option value="Hygiene Items">Hygiene Items</option>
+                            <option value="Canned Food">Canned Food</option>
+                            <option value="Seasonal Clothing">Seasonal Clothing</option>
+                            <option value="Basic Supplies">Basic Supplies</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editItemQuantity">Quantity:</label>
+                        <input type="number" class="form-control" id="editItemQuantity" name="itemQuantity" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editItemNotes">Notes:</label>
+                        <textarea class="form-control" id="editItemNotes" name="itemNotes"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveInventoryChanges">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="main" class="container mt-4">
+    <div class="dashboard-container">
+        <h2 class="mb-1">Manage Inventory</h2>
+        <div class="mb-1">
+            <a href="{% url 'dashboard' %}" class="dashboard-link">
+                <i class="ion-arrow-left-c"></i> Back to Dashboard
+            </a>
+        </div>
+        <br>
+        <div class="row">
+            <!-- Add Item Form -->
+            <div class="col-md-6">
+                <h3>Add Item</h3>
+                <form method="post" class="mb-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="item_name" placeholder="Item Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" class="form-control" name="quantity" placeholder="Quantity" required>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" name="category" required>
+                            <option value="" disabled selected>Select Category</option>
+                            <option value="Hygiene Items">Hygiene Items</option>
+                            <option value="Canned Food">Canned Food</option>
+                            <option value="Seasonal Clothing">Seasonal Clothing</option>
+                            <option value="Basic Supplies">Basic Supplies</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-control" name="notes" placeholder="Notes (optional)"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Add Item</button>
+                </form>
+            </div>
+
+            <!-- Inventory Table -->
+            <div class="col-md-6">
+                <h3>Inventory Items</h3>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Date Added</th>
+                                <th>Last Updated</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in inventory_items %}
+                            <tr data-item-id="{{ item.id }}">
+                                <td class="item-name">{{ item.name }}</td>
+                                <td class="item-category">{{ item.category }}</td>
+                                <td class="item-quantity">{{ item.quantity }}</td>
+                                <td>{{ item.date_added|date:"Y-m-d H:i" }}</td>
+                                <td class="item-date-updated">{{ item.date_updated|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    <button class="btn btn-edit" data-item-id="{{ item.id }}">Update</button>
+                                    <button class="btn btn-delete" data-item-id="{{ item.id }}">Delete</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-image: url("{% static 'uplift/images/dashbg.png' %}");
+        background-attachment: fixed;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        height: 100vh;
+        overflow-y: auto;
+    }
+    #main {
+        margin-left: 4em;
+    }
+   .dashboard-container {
+    padding: 2rem;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 10px;
+    margin: 2rem;
+    width: 100%;
+    max-width: 1200px;
+}
+    .table {
+        background-color: white;
+        border-radius: 5px;
+        width: 200%;
+        table-layout: auto;
+    }
+    /* Updated Modal Styles */
+    .modal-backdrop {
+        opacity: 0.5;
+    }
+
+    .modal-dialog {
+        display: flex;
+        align-items: center;
+        min-height: calc(100% - 1rem);
+    }
+
+    .modal-content {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        width: 100%;
+    }
+
+    .modal-header {
+        background-color: #f9cb32;
+        color: black;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        padding: 1rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #dee2e6;
+        padding: 1rem;
+    }
+
+    .form-control {
+        margin-bottom: 1rem;
+    }
+    .table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+}
+/* Add Item button */
+button[type="submit"].btn {
+    background-color: #f9cb32;
+    color: black;
+    transition: all 0.3s ease;
+}
+
+button[type="submit"].btn:hover {
+    background-color: black;
+    color: #f9cb32;
+}
+
+/* Update button */
+.btn-edit {
+    background-color: #007bff;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-edit:hover {
+    background-color: #0056b3;
+    color: white;
+}
+
+/* Delete button */
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+    color: white;
+}
+.dashboard-link {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background-color: #f9cb32;
+    color: black;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-weight: bold;
+}
+
+.dashboard-link:hover {
+    background-color: black;
+    color: #f9cb32;
+    text-decoration: none;
+}
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Edit button click handler
+    $(document).on('click', '.btn-edit', function() {
+        var itemId = $(this).data('item-id');
+        var itemRow = $(this).closest('tr');
+
+        // Get current values
+        var itemName = itemRow.find('.item-name').text();
+        var itemCategory = itemRow.find('.item-category').text();
+        var itemQuantity = itemRow.find('.item-quantity').text();
+
+        // Populate modal
+        $('#editInventoryId').val(itemId);
+        $('#editItemName').val(itemName);
+        $('#editItemCategory').val(itemCategory);
+        $('#editItemQuantity').val(itemQuantity);
+
+        // Show modal
+        $('#editInventoryModal').modal('show');
+    });
+
+    // Save changes handler
+    $('#saveInventoryChanges').click(function() {
+        var itemId = $('#editInventoryId').val();
+        var formData = {
+            name: $('#editItemName').val(),
+            category: $('#editItemCategory').val(),
+            quantity: $('#editItemQuantity').val(),
+            notes: $('#editItemNotes').val()
+        };
+
+        $.ajax({
+            url: `/uplift/inventory/update/${itemId}/`,
+            method: 'POST',
+            headers: { 'X-CSRFToken': window.CSRF_TOKEN },
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    $('#editInventoryModal').modal('hide');
+                    location.reload();
+                } else {
+                    alert("Error updating item: " + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error updating item:", error);
+                alert("Error updating item. Please try again.");
+            }
+        });
+    });
+
+    // Delete button handler
+    $(document).on('click', '.btn-delete', function() {
+        var itemId = $(this).data('item-id');
+        if (confirm("Are you sure you want to delete this item?")) {
+            $.ajax({
+                url: `/uplift/inventory/delete/${itemId}/`,
+                method: 'POST',
+                headers: { 'X-CSRFToken': window.CSRF_TOKEN },
+                success: function(response) {
+                    if (response.success) {
+                        $(`tr[data-item-id="${itemId}"]`).remove();
+                    } else {
+                        alert("Error deleting item: " + response.message);
+                    }
+                },
+                error: function(error) {
+                    console.error("Error deleting item:", error);
+                    alert("Error deleting item. Please try again.");
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

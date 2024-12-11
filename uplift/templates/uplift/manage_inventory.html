@@ -1,0 +1,577 @@
+{% extends 'uplift/base.html' %}
+{% load static %}
+
+{% block title %}Manage Inventory{% endblock %}
+
+{% block content %}
+<script>
+    window.CSRF_TOKEN = "{{ csrf_token }}";
+</script>
+
+<!-- Edit Inventory Modal -->
+<div class="modal fade" id="editInventoryModal" tabindex="-1" role="dialog" aria-labelledby="editInventoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editInventoryModalLabel">Edit Inventory Item</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editInventoryForm">
+                    <input type="hidden" id="editInventoryId" name="itemId">
+                    <div class="form-group">
+                        <label for="editItemName">Item Name:</label>
+                        <input type="text" class="form-control" id="editItemName" name="itemName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editItemCategory">Category:</label>
+                        <select class="form-control" id="editItemCategory" name="itemCategory" required>
+                            <option value="Hygiene Items">Hygiene Items</option>
+                            <option value="Canned Food">Canned Food</option>
+                            <option value="Seasonal Clothing">Seasonal Clothing</option>
+                            <option value="Basic Supplies">Basic Supplies</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editItemQuantity">Quantity:</label>
+                        <input type="number" class="form-control" id="editItemQuantity" name="itemQuantity" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editItemNotes">Notes:</label>
+                        <textarea class="form-control" id="editItemNotes" name="itemNotes"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveInventoryChanges">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Container -->
+<div class="dashboard-container">
+    <div class="row mb-4">
+        <div class="col">
+            <a href="{% url 'dashboard' %}" class="btn btn-warning">
+                <i class="ion-arrow-left-c"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="report-section">
+        <h2>Manage Inventory</h2>
+
+        <!-- Content sections will go here -->
+        <div class="row">
+            <!-- Add Item Form will go here -->
+            <!-- Add Item Form Section -->
+<div class="col-md-4">
+    <div class="form-section">
+        <h3>Add New Item</h3>
+        <form method="post" class="mb-4">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add">
+
+            <!-- Item Name -->
+            <div class="form-group">
+                <label for="item_name">Item Name</label>
+                <input type="text"
+                       class="form-control"
+                       id="item_name"
+                       name="item_name"
+                       placeholder="Enter item name"
+                       required>
+            </div>
+
+            <!-- Category -->
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select class="form-control"
+                        id="category"
+                        name="category"
+                        required>
+                    <option value="" disabled selected>Select Category</option>
+                    <option value="Hygiene Items">Hygiene Items</option>
+                    <option value="Canned Food">Canned Food</option>
+                    <option value="Seasonal Clothing">Seasonal Clothing</option>
+                    <option value="Basic Supplies">Basic Supplies</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Others">Others</option>
+                </select>
+            </div>
+
+            <!-- Quantity -->
+            <div class="form-group">
+                <label for="quantity">Quantity</label>
+                <input type="number"
+                       class="form-control"
+                       id="quantity"
+                       name="quantity"
+                       placeholder="Enter quantity"
+                       min="0"
+                       required>
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group">
+                <label for="notes">Notes (Optional)</label>
+                <textarea class="form-control"
+                          id="notes"
+                          name="notes"
+                          rows="3"
+                          placeholder="Add any additional notes"></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-add-item">
+                <i class="ion-plus-round"></i> Add Item
+            </button>
+        </form>
+    </div>
+</div>
+
+
+            <!-- Inventory Table will go here -->
+            <!-- Inventory Table Section -->
+<div class="col-md-8">
+    <div class="table-section">
+        <h3>Current Inventory</h3>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                        <th>Date Added</th>
+                        <th>Last Updated</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in inventory_items %}
+                    <tr data-item-id="{{ item.id }}">
+                        <td class="item-name">{{ item.name }}</td>
+                        <td class="item-category">{{ item.category }}</td>
+                        <td class="item-quantity">{{ item.quantity }}</td>
+                        <td>{{ item.date_added|date:"F d, Y" }}</td>
+                        <td class="item-date-updated">{{ item.date_updated|date:"F d, Y" }}</td>
+                        <td class="item-notes">{{ item.notes|default:"N/A" }}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-sm btn-edit" data-item-id="{{ item.id }}">
+                                Update
+                            </button>
+                            <button class="btn btn-sm btn-delete" data-item-id="{{ item.id }}">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Required Scripts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+<!-- Required Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Edit button click handler
+    $(document).on('click', '.btn-edit', function() {
+        var itemId = $(this).data('item-id');
+        var itemRow = $(this).closest('tr');
+
+        // Get current values
+        var itemName = itemRow.find('.item-name').text().trim();
+        var itemCategory = itemRow.find('.item-category').text().trim();
+        var itemQuantity = itemRow.find('.item-quantity').text().trim();
+        var itemNotes = itemRow.find('.item-notes').text().trim();
+
+        console.log('Editing item:', {
+            id: itemId,
+            name: itemName,
+            category: itemCategory,
+            quantity: itemQuantity
+        });
+
+        // Populate modal
+        $('#editInventoryId').val(itemId);
+        $('#editItemName').val(itemName);
+        $('#editItemCategory').val(itemCategory);
+        $('#editItemQuantity').val(itemQuantity);
+        $('#editItemNotes').val(itemNotes === 'N/A' ? '' : itemNotes);
+
+        // Show modal
+        $('#editInventoryModal').modal('show');
+    });
+
+$('#saveInventoryChanges').click(function() {
+    var itemId = $('#editInventoryId').val();
+    var formData = {
+        name: $('#editItemName').val().trim(),
+        category: $('#editItemCategory').val(),
+        quantity: $('#editItemQuantity').val(),
+        notes: $('#editItemNotes').val().trim()
+    };
+
+    $.ajax({
+        url: `/uplift/inventory/update/${itemId}/`,
+        method: 'POST',
+        headers: { 'X-CSRFToken': window.CSRF_TOKEN },
+        data: formData,
+        success: function(response) {
+            if (response.success) {
+                try {
+                    // Parse the date string properly
+                    var date = new Date(response.date_updated.replace('-d', '-08'));
+                    if (isNaN(date.getTime())) {
+                        throw new Error('Invalid date');
+                    }
+                    var formattedDate = date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+
+                    // Update the row
+                    var row = $(`tr[data-item-id="${itemId}"]`);
+                    row.find('.item-name').text(formData.name);
+                    row.find('.item-category').text(formData.category);
+                    row.find('.item-quantity').text(formData.quantity);
+                    row.find('.item-notes').text(formData.notes || 'N/A');
+                    row.find('.item-date-updated').text(formattedDate);
+
+                    $('#editInventoryModal').modal('hide');
+                    alert('Item updated successfully!');
+                } catch (e) {
+                    console.error('Date parsing error:', e);
+                    // Fallback to server-provided date if parsing fails
+                    row.find('.item-date-updated').text(response.date_updated);
+                }
+            } else {
+                alert("Error updating item: " + response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error updating item:", error);
+            alert("Error updating item. Please try again.");
+        }
+    });
+});
+
+    // Delete button handler
+    $(document).on('click', '.btn-delete', function() {
+        var itemId = $(this).data('item-id');
+        var itemName = $(this).closest('tr').find('.item-name').text().trim();
+
+        console.log('Attempting to delete item:', {
+            id: itemId,
+            name: itemName
+        });
+
+        if (confirm(`Are you sure you want to delete "${itemName}"?`)) {
+            $.ajax({
+                url: `/uplift/inventory/delete/${itemId}/`,
+                method: 'POST',
+                headers: { 'X-CSRFToken': window.CSRF_TOKEN },
+                success: function(response) {
+                    console.log('Delete response:', response);
+                    if (response.success) {
+                        // Remove row with fade effect
+                        $(`tr[data-item-id="${itemId}"]`).fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                        alert('Item deleted successfully!');
+                    } else {
+                        alert("Error deleting item: " + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error deleting item:", {
+                        status: status,
+                        error: error,
+                        response: xhr.responseText
+                    });
+                    alert("Error deleting item. Please try again.");
+                }
+            });
+        }
+    });
+
+    // Modal form validation
+    $('#editInventoryForm').on('submit', function(e) {
+        e.preventDefault();
+        $('#saveInventoryChanges').click();
+    });
+
+    // Clear form when modal is closed
+    $('#editInventoryModal').on('hidden.bs.modal', function() {
+        $('#editInventoryForm')[0].reset();
+        $('#editInventoryId').val('');
+    });
+
+    // Add loading indicators
+    $(document).ajaxStart(function() {
+        $('button').prop('disabled', true);
+    }).ajaxStop(function() {
+        $('button').prop('disabled', false);
+    });
+});
+</script>
+<style>
+    #main {
+        margin-left: 5em;
+    }
+    .form-section {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 0.5rem;
+        text-align: left;
+        display: block;
+    }
+
+    .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-control:focus {
+        border-color: #f9cb32;
+        box-shadow: 0 0 0 0.2rem rgba(249, 203, 50, 0.25);
+    }
+
+    .btn-add-item {
+        background-color: #f9cb32;
+        color: black;
+        padding: 0.5rem 1.5rem;
+        border-radius: 5px;
+        border: none;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .btn-add-item:hover {
+        background-color: black;
+        color: #f9cb32;
+    }
+
+    .btn-add-item i {
+        margin-right: 0.5rem;
+    }
+
+    select.form-control {
+        height: calc(1.5em + .75rem + 2px);
+        padding: .375rem .75rem;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+    /* Main Layout Styles */
+    body {
+        background-image: url("{% static 'uplift/images/dashbg.png' %}");
+        background-attachment: fixed;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    .dashboard-container {
+        padding: 2rem;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.6);
+        border-radius: 10px;
+        margin: 2rem auto;
+        width: 95%;
+        max-width: 1400px;
+    }
+
+    /* Table Section Styles */
+    .table-section {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-responsive {
+        max-height: 600px;
+        overflow-y: auto;
+        border-radius: 5px;
+    }
+
+    .table {
+        margin-bottom: 0;
+        background-color: white;
+    }
+
+    .thead-dark th {
+        background-color: #343a40;
+        color: white;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .table td, .table th {
+        vertical-align: middle;
+        padding: 0.75rem;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(249, 203, 50, 0.1);
+    }
+
+    /* Button Styles */
+    .btn {
+        border-radius: 5px;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-edit {
+        background-color: #007bff;
+        color: white;
+        margin-right: 0.5rem;
+    }
+
+    .btn-edit:hover {
+        background-color: #0056b3;
+        color: white;
+    }
+
+    .btn-delete {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background-color: #c82333;
+        color: white;
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border-radius: 10px;
+        box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+        background-color: #f9cb32;
+        color: black;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .modal-footer {
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    /* Back to Dashboard Button */
+    .btn-warning {
+        background-color: #f9cb32;
+        border-color: #f9cb32;
+        color: black;
+    }
+
+    .btn-warning:hover {
+        background-color: black;
+        border-color: black;
+        color: #f9cb32;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .dashboard-container {
+            margin: 1rem;
+            padding: 1rem;
+        }
+
+        .table-responsive {
+            max-height: 400px;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .btn {
+            margin: 0.2rem 0;
+        }
+    }
+
+    /* Print Styles */
+    @media print {
+        body {
+            background: none;
+        }
+
+        .dashboard-container {
+            margin: 0;
+            padding: 0;
+            background: none;
+        }
+
+        .btn, .action-buttons {
+            display: none;
+        }
+
+        .table {
+            border: 1px solid #dee2e6;
+        }
+
+        .thead-dark th {
+            background-color: #f8f9fa !important;
+            color: #000 !important;
+        }
+    }
+
+.table td.item-notes {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Add tooltip on hover for truncated notes */
+.table td.item-notes:hover {
+    white-space: normal;
+    overflow: visible;
+    cursor: pointer;
+    position: relative;
+    background-color: white;
+    z-index: 1;
+}
+</style>
+{% endblock %}

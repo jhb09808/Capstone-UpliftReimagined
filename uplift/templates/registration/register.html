@@ -1,0 +1,259 @@
+{% extends 'uplift/base.html' %}
+{% load static %}
+{% load socialaccount %}
+
+{% block title %}Register{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'uplift/css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<style>
+#main {
+        margin-left: 5em;  /* Adjust this value as needed */
+    }
+    body {
+        background: url("{% static 'uplift/images/van.jpg' %}") no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow-y: auto;
+    }
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        min-height: calc(100vh - 80px);
+        padding: 40px 0;
+        background-color: transparent;
+    }
+    .login-container, .volunteer-container {
+        background: rgba(0, 0, 0, 0.7);
+        padding: 40px;
+        border-radius: 10px;
+        border: 2px solid #f9cb32;
+        margin: 0 20px;
+        display: flex;
+        flex-direction: column;
+    }
+    .login-container {
+        width: 400px;
+        text-align: center;
+    }
+    .volunteer-container {
+        width: 600px;
+        color: white;
+        text-align: left;
+        overflow-y: auto;
+        max-height: 800px;
+    }
+    .login-title, .volunteer-title {
+        font-size: 32px;
+        margin-bottom: 20px;
+        color: #f9cb32;
+        text-align: center;
+    }
+    .form-group {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .form-label {
+        font-size: 20px;
+        margin-bottom: 5px;
+        color: white;
+        display: block;
+    }
+    .form-control {
+        width: 100%;
+        max-width: 300px;
+        padding: 10px;
+        border: 1px solid #f9cb32;
+        border-radius: 5px;
+        background-color: #f9cb32;
+        color: black;
+        text-align: center;
+        margin: 0 auto;
+    }
+    .submit-button {
+        width: 100%;
+        max-width: 300px;
+        padding: 10px;
+        background-color: #f9cb32;
+        border: none;
+        border-radius: 5px;
+        color: black;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background-color 0.3s;
+    }
+    .submit-button:hover {
+        background-color: #e5b72c;
+    }
+    .social-login {
+        margin-top: 20px;
+    }
+    .social-login a {
+        display: block;
+        background-color: #f9cb32;
+        color: black;
+        padding: 10px;
+        text-align: center;
+        border-radius: 5px;
+        font-weight: bold;
+        text-decoration: none;
+        margin: 5px 0;
+        transition: background-color 0.3s;
+    }
+    .social-login a:hover {
+        background-color: #e5b72c;
+    }
+    .social-login img {
+        vertical-align: middle;
+        margin-right: 10px;
+    }
+    .error-box {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-align: left;
+    }
+    .login-link {
+        margin-top: 20px;
+        color: white;
+    }
+    .login-link a {
+        color: #f9cb32;
+        text-decoration: none;
+    }
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+    .volunteer-list {
+        padding-left: 20px;
+    }
+    .volunteer-list li {
+        margin-bottom: 30px;
+    }
+    .volunteer-contact {
+        margin-top: 20px;
+        font-style: italic;
+        color: #f9cb32;
+        font-weight: bold;
+    }
+    .volunteer-container::-webkit-scrollbar {
+        width: 10px;
+    }
+    .volunteer-container::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    .volunteer-container::-webkit-scrollbar-thumb {
+        background-color: #f9cb32;
+        border-radius: 5px;
+    }
+    .volunteer-image {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+        margin: 20px auto;
+        display: block;
+        border-radius: 10px;
+    }
+    .volunteer-way-title {
+        color: #f9cb32;
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container">
+    <div class="volunteer-container">
+        <h2 class="volunteer-title">Volunteer</h2>
+        <img src="{% static 'uplift/images/smile.webp' %}" alt="Volunteer Smile" class="volunteer-image">
+        <h3 class="volunteer-way-title">Three Ways to Get Involved</h3>
+        <ol class="volunteer-list">
+            <li>
+                <strong class="volunteer-way-title">Volunteer on our Uplift Routes</strong>
+                <img src="{% static 'uplift/images/deliver.jpg' %}" alt="Uplift Routes" class="volunteer-image">
+                <p>Help deliver meals, clothing and necessities to the homeless. Uplift trucks 'roll out' at 6pm on Mondays and Wednesdays; 5pm on Saturdays. The average route takes 4 – 5 hours. Please call in advance to schedule your participation.</p>
+                <p><strong>Contact: Amy Cox 913-731-6046 or Email volunteer@uplift.org</strong></p>
+                <p>Volunteering on the routes for the first time? <a href="{% static 'documents/Volunteer-Orientation4.pdf' %}" style="color: #f9cb32;" target="_blank">Click HERE</a> to view guidelines and expectations.</p>
+                <p>Our address is 1516 Prospect, Kansas City, MO 64127. There are three large white overhead doors in the alley for drop off. If the doors are closed, just knock on them or honk.</p>
+            </li>
+            <li>
+                <strong class="volunteer-way-title">Prepare Meals</strong>
+                <img src="{% static 'uplift/images/meals.webp' %}" alt="Prepare Meals" class="volunteer-image">
+                <p>Cooks are needed to prepare and deliver meals to Uplift for approximately 60 people.</p>
+                <p>Click on the link for recipe and instructions. <a href="{% static 'documents/cookbook.pdf' %}" style="color: #f9cb32;" target="_blank">Cook's Manual</a></p>
+                <p><strong>Contact: Renee Jones 816-377-6009 hiampacity@yahoo.com</strong></p>
+            </li>
+            <li>
+                <strong class="volunteer-way-title">Warehouse Work Sessions</strong>
+                <img src="{% static 'uplift/images/warehouse.webp' %}" alt="Warehouse Work" class="volunteer-image">
+                <p>Every Saturday 9:00 a.m. – 12:00 p.m.</p>
+                <p>Come help us sort donations, stock our shelves, fold clothes and have a good old time doing it.</p>
+                <p>This is an excellent service opportunity for elementary/high school students, youth sports teams and other organized groups.</p>
+                <p style="color: #f9cb32;">Register Now!</p>
+            </li>
+        </ol>
+        <div class="volunteer-contact">
+            <p>Volunteer Coordinator Email: volunteer@uplift.org</p>
+            <p>General Email: info@uplift.org</p>
+            <p>Uplift Warehouse ADDRESS<br>
+            1516 Prospect Ave.<br>
+            Kansas City, MO 64127</p>
+            <p>(please do not ship parcels or packages to the warehouse)</p>
+        </div>
+    </div>
+
+    <div class="login-container">
+        <h2 class="login-title">Register</h2>
+
+        <form method="post" action="{% url 'account_signup' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username" class="form-label">Username</label>
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                <label for="id_email" class="form-label">Email</label>
+                {{ form.email }}
+            </div>
+            <div class="form-group">
+                <label for="id_password1" class="form-label">Password</label>
+                {{ form.password1 }}
+            </div>
+            <div class="form-group">
+                <label for="id_password2" class="form-label">Confirm Password</label>
+                {{ form.password2 }}
+            </div>
+
+            {% if form.errors or form.non_field_errors %}
+                <div class="error-box">
+                    {% for field in form %}
+                        {{ field.errors }}
+                    {% endfor %}
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <button type="submit" class="submit-button">Register</button>
+        </form>
+
+        <h1>or</h1>
+        {% providers_media_js %}
+        <div class="social-login">
+            <a href="{% provider_login_url "google" method="oauth2" %}">
+                <img src="{% static 'uplift/images/google.png' %}" alt="Google logo" width="20px">
+                Register with Google
+            </a>
+        </div>
+
+        <p class="login-link">Already a member? <a href="{% url 'account_login' %}">Login</a></p>
+    </div>
+</div>
+{% endblock %}

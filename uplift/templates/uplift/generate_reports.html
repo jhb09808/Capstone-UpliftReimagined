@@ -1,0 +1,312 @@
+{% extends 'uplift/base.html' %}
+{% load static %}
+
+{% block title %}Generate Reports{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="row mb-4">
+        <div class="col">
+            <a href="{% url 'dashboard' %}" class="btn btn-warning">
+                <i class="ion-arrow-left-c"></i> Back to Dashboard
+            </a>
+            <button onclick="window.print()" class="btn btn-primary ml-2">
+                <i class="ion-printer"></i> Print Report
+            </button>
+        </div>
+    </div>
+
+    <div class="report-section">
+        <h2>Volunteer Activities by Month</h2>
+        <form method="get" class="mb-3">
+            <div class="form-row">
+                <div class="col">
+                    <select name="volunteer_year" class="form-control">
+                        <option value="">All Years</option>
+                        {% for year in years %}
+                            <option value="{{ year }}" {% if selected_volunteer_year == year|stringformat:"i" %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col">
+    <select name="volunteer_month" class="form-control">
+        <option value="">All Months</option>
+        <option value="1" {% if selected_volunteer_month == "1" %}selected{% endif %}>January</option>
+        <option value="2" {% if selected_volunteer_month == "2" %}selected{% endif %}>February</option>
+        <option value="3" {% if selected_volunteer_month == "3" %}selected{% endif %}>March</option>
+        <option value="4" {% if selected_volunteer_month == "4" %}selected{% endif %}>April</option>
+        <option value="5" {% if selected_volunteer_month == "5" %}selected{% endif %}>May</option>
+        <option value="6" {% if selected_volunteer_month == "6" %}selected{% endif %}>June</option>
+        <option value="7" {% if selected_volunteer_month == "7" %}selected{% endif %}>July</option>
+        <option value="8" {% if selected_volunteer_month == "8" %}selected{% endif %}>August</option>
+        <option value="9" {% if selected_volunteer_month == "9" %}selected{% endif %}>September</option>
+        <option value="10" {% if selected_volunteer_month == "10" %}selected{% endif %}>October</option>
+        <option value="11" {% if selected_volunteer_month == "11" %}selected{% endif %}>November</option>
+        <option value="12" {% if selected_volunteer_month == "12" %}selected{% endif %}>December</option>
+    </select>
+</div>
+                <div class="col">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </div>
+        </form>
+        {% regroup volunteer_activities by start_time|date:"F Y" as monthly_activities %}
+        {% for month in monthly_activities %}
+        <div class="month-section">
+            <h3>{{ month.grouper }}</h3>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Volunteer</th>
+                            <th>Shift</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for shift in month.list %}
+                        <tr>
+                            <td>{{ shift.volunteer.username }}</td>
+                            <td>{{ shift.description }}</td>
+                            <td>{{ shift.start_time|date:"F d, Y h:i A" }}</td>
+                            <td>{{ shift.end_time|date:"F d, Y h:i A" }}</td>
+                            <td>{{ shift.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="report-section mt-5">
+        <h2>Users Registered by Month</h2>
+        <form method="get" class="mb-3">
+            <div class="form-row">
+                <div class="col">
+                    <select name="user_year" class="form-control">
+                        <option value="">All Years</option>
+                        {% for year in years %}
+                            <option value="{{ year }}" {% if selected_user_year == year|stringformat:"i" %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col">
+    <select name="user_month" class="form-control">
+        <option value="">All Months</option>
+        <option value="1" {% if selected_user_month == "1" %}selected{% endif %}>January</option>
+        <option value="2" {% if selected_user_month == "2" %}selected{% endif %}>February</option>
+        <option value="3" {% if selected_user_month == "3" %}selected{% endif %}>March</option>
+        <option value="4" {% if selected_user_month == "4" %}selected{% endif %}>April</option>
+        <option value="5" {% if selected_user_month == "5" %}selected{% endif %}>May</option>
+        <option value="6" {% if selected_user_month == "6" %}selected{% endif %}>June</option>
+        <option value="7" {% if selected_user_month == "7" %}selected{% endif %}>July</option>
+        <option value="8" {% if selected_user_month == "8" %}selected{% endif %}>August</option>
+        <option value="9" {% if selected_user_month == "9" %}selected{% endif %}>September</option>
+        <option value="10" {% if selected_user_month == "10" %}selected{% endif %}>October</option>
+        <option value="11" {% if selected_user_month == "11" %}selected{% endif %}>November</option>
+        <option value="12" {% if selected_user_month == "12" %}selected{% endif %}>December</option>
+    </select>
+</div>
+                <div class="col">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </div>
+        </form>
+        <div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Date Registered</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.phone_number|default:"N/A" }}</td>
+                <td>{{ user.date_joined|date:"F d, Y H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+    </div>
+
+    <div class="report-section mt-5">
+        <h2>Inventory Report</h2>
+        <form method="get" class="mb-3">
+            <div class="form-row">
+                <div class="col">
+                    <select name="inventory_year" class="form-control">
+                        <option value="">All Years</option>
+                        {% for year in years %}
+                            <option value="{{ year }}" {% if selected_inventory_year == year|stringformat:"i" %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col">
+    <select name="inventory_month" class="form-control">
+        <option value="">All Months</option>
+        <option value="1" {% if selected_inventory_month == "1" %}selected{% endif %}>January</option>
+        <option value="2" {% if selected_inventory_month == "2" %}selected{% endif %}>February</option>
+        <option value="3" {% if selected_inventory_month == "3" %}selected{% endif %}>March</option>
+        <option value="4" {% if selected_inventory_month == "4" %}selected{% endif %}>April</option>
+        <option value="5" {% if selected_inventory_month == "5" %}selected{% endif %}>May</option>
+        <option value="6" {% if selected_inventory_month == "6" %}selected{% endif %}>June</option>
+        <option value="7" {% if selected_inventory_month == "7" %}selected{% endif %}>July</option>
+        <option value="8" {% if selected_inventory_month == "8" %}selected{% endif %}>August</option>
+        <option value="9" {% if selected_inventory_month == "9" %}selected{% endif %}>September</option>
+        <option value="10" {% if selected_inventory_month == "10" %}selected{% endif %}>October</option>
+        <option value="11" {% if selected_inventory_month == "11" %}selected{% endif %}>November</option>
+        <option value="12" {% if selected_inventory_month == "12" %}selected{% endif %}>December</option>
+    </select>
+</div>
+                <div class="col">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </div>
+        </form>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                        <th>Date Added</th>
+                        <th>Date Updated</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in inventory_items %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.category }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.date_added|date:"F d, Y" }}</td>
+                        <td>{{ item.date_updated|date:"F d, Y" }}</td>
+                        <td>{{ item.notes|default:"N/A" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    #main {
+        margin-left: 5em;
+    }
+    body {
+        background-image: url("{% static 'uplift/images/dashbg.png' %}");
+        background-attachment: fixed;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        height: 100vh;
+        overflow-y: auto;
+    }
+    @media print {
+        body {
+            background-image: none !important;
+            background-color: white !important;
+        }
+        .dashboard-container {
+            margin: 0;
+            padding: 20px;
+            background: none;
+        }
+        .btn, .no-print {
+            display: none !important;
+        }
+        .report-section {
+            page-break-inside: avoid;
+            margin: 20px 0;
+            box-shadow: none;
+        }
+        .table {
+            border: 1px solid #dee2e6;
+            page-break-inside: auto;
+        }
+        .table th {
+            background-color: #f8f9fa !important;
+            color: #000 !important;
+        }
+        .table td {
+            border: 1px solid #dee2e6;
+        }
+    }
+
+    .dashboard-container {
+        padding: 2rem;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.6);
+        border-radius: 10px;
+        margin: 2rem;
+    }
+
+    .month-section {
+        margin-bottom: 2rem;
+        background-color: white;
+        border-radius: 5px;
+        padding: 20px;
+    }
+
+    .report-section {
+        background-color: white;
+        border-radius: 5px;
+        padding: 20px;
+        margin-top: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-warning {
+        background-color: #f9cb32;
+        border-color: #f9cb32;
+        color: black;
+    }
+
+    .btn-warning:hover {
+        background-color: black;
+        border-color: black;
+        color: #f9cb32;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(249, 203, 50, 0.1);
+    }
+.form-control {
+    background-color: white;
+    color: black;
+    border: 1px solid #ced4da;
+}
+
+.form-control option {
+    background-color: white;
+    color: black;
+    padding: 8px;
+}
+
+select.form-control {
+    height: calc(1.5em + .75rem + 2px);
+    padding: .375rem .75rem;
+}
+
+.form-control:focus {
+    border-color: #f9cb32;
+    box-shadow: 0 0 0 0.2rem rgba(249, 203, 50, 0.25);
+}
+</style>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+{% endblock %}

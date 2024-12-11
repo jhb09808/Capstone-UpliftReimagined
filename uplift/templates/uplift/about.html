@@ -1,0 +1,206 @@
+{% extends "uplift/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    #main {
+        margin-left: 15em;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    .about-container {
+        width: 80%;
+        max-width: 1000px;
+        padding: 2rem;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(249, 203, 50, 0.3);
+    }
+    .about-section {
+        margin: 0 auto;
+        padding: 1rem;
+    }
+    .about-text {
+        font-size: 16px;
+        line-height: 1.6;
+        letter-spacing: 0.3px;
+        margin-bottom: 1.5rem;
+        text-align: justify;
+    }
+    .highlight {
+        color: #f9cb32;
+        font-weight: bold;
+    }
+    .carousel-container {
+        max-width: 100%;
+        margin: 1.5rem auto;
+        border: 3px solid #f9cb32;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(249, 203, 50, 0.5);
+    }
+    .carousel-item img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    .carousel-item img:hover {
+        transform: scale(1.05);
+    }
+    .image-viewer {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+    }
+    .viewer-content {
+        position: relative;
+        width: 90%;
+        height: 90%;
+        margin: 2% auto;
+    }
+    .viewer-content img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+    .close-viewer {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        color: #f9cb32;
+        font-size: 30px;
+        cursor: pointer;
+        z-index: 1001;
+    }
+    .board-section {
+        margin: 1.5rem 0;
+        padding: 1.5rem;
+        border: 2px solid #f9cb32;
+        border-radius: 15px;
+        background-color: rgba(249, 203, 50, 0.1);
+    }
+    .board-member {
+        margin: 0.5rem 0;
+        font-size: 1em;
+    }
+    .quote-section {
+        font-style: italic;
+        color: #f9cb32;
+        margin: 1.5rem 0;
+        padding: 1rem;
+        font-size: 1.1em;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+    .section-title {
+        color: #f9cb32;
+        border-bottom: 2px solid #f9cb32;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+        font-size: 2em;
+    }
+    @media (max-width: 768px) {
+        .about-container {
+            width: 95%;
+            padding: 1rem;
+        }
+        .about-text {
+            font-size: 14px;
+        }
+        .carousel-item img {
+            height: 200px;
+        }
+    }
+</style>
+
+<div class="about-container">
+    <div class="about-section">
+        <h2 class="section-title">About Uplift</h2>
+        <div class="about-text">
+            <p><span class="highlight">Uplift Organization</span> is a mobile street outreach for the homeless of Kansas City. Three nights a week, we take four Sprinter vans loaded with food, clothing, and other essential supplies out to the homeless.</p>
+            <p>We meet them at parks, under bridges, at their camps, or wherever they are. We typically serve <span class="highlight">250-400 people each night</span> and we never miss a night!</p>
+            <p>Uplift was started <span class="highlight">30 years ago in 1990</span>. We are 100% donation-based and run completely by volunteers. Uplift has no paid staff and is not affiliated with any particular church or religious organization.</p>
+            <p>Uplift believes in the power of unconditional love and kindness. We welcome all people of good will to join us in this work!</p>
+            <p>We are not funded by federal, state or local government grants or sponsored by other organizations and/or agencies. Uplift survives by donations and your personal commitment to feed and clothe the area's homeless.</p>
+        </div>
+
+        <!-- Carousel -->
+        <div id="imageCarousel" class="carousel slide carousel-container" data-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="{% static 'uplift/images/slide4.JPG' %}" alt="Uplift Van">
+                </div>
+                <!-- Add more carousel items as needed -->
+            </div>
+            <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </a>
+            <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <!-- Image Viewer -->
+        <div class="image-viewer">
+            <div class="viewer-content">
+                <span class="close-viewer">&times;</span>
+                <img src="" alt="Full size image">
+            </div>
+        </div>
+
+        <div class="board-section">
+            <h3 class="section-title">Board of Directors</h3>
+            <div class="board-member">Ross Dessert, President</div>
+            <div class="board-member">Michael Bartkoski, Board Chair</div>
+            <div class="board-member">Dan Schipfer, Secretary</div>
+            <div class="board-member">Andre Logan, Treasurer</div>
+            <div class="board-member">Jim Schmidt</div>
+            <div class="board-member">Rob Oyler</div>
+        </div>
+
+        <div class="about-text">
+            <h3 class="section-title">Presentations</h3>
+            <p>Scheduling a presentation is an excellent opportunity for individuals & organizations to learn more about Uplift and the homeless we help. All presentations are audience specific.</p>
+            <p>Please email us at <a href="mailto:info@uplift.org" class="highlight">info@uplift.org</a> if you would like to schedule a presentation. Get your community, service organization or school involved by sponsoring a donation drive or a canned food drive.</p>
+            <p><span class="highlight">Uplift is a not-for-profit 501 (c)(3) tax exempt homeless outreach. Monetary and in-kind donations are welcomed.</span></p>
+        </div>
+
+        <div class="quote-section">
+            <p>"Vision without action is merely a dream. Action without vision just passes the time. Vision with action can change the world."</p>
+            <small>- Joel Barker</small>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Image viewer functionality
+    $('.carousel-item img').click(function() {
+        $('.image-viewer img').attr('src', $(this).attr('src'));
+        $('.image-viewer').fadeIn();
+    });
+
+    $('.close-viewer').click(function() {
+        $('.image-viewer').fadeOut();
+    });
+
+    $(document).keyup(function(e) {
+        if (e.key === "Escape") {
+            $('.image-viewer').fadeOut();
+        }
+    });
+});
+</script>
+{% endblock %}

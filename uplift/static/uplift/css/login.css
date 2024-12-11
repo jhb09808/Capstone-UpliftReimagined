@@ -1,0 +1,106 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin-bottom:2rem;
+}
+
+.login-box {
+    width: 30%; /* Reduced width */
+    padding: 1.5rem; /* Reduced padding */
+    background-color: rgba(0, 0, 0, 0.7); /* Less opacity */
+    border-radius: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* Center content inside the box */
+    text-align: center;
+}
+
+.login-title {
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: #f9cb32;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    width: 100%;  /* Full width of the login box */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.25rem; /* Reduced space between label and input box */
+    color: #f9cb32;
+    text-align: left; /* Align labels to the left */
+    width: 100%;
+}
+
+input[type="text"], input[type="password"] {
+    width: 80%; /* Increased width */
+    padding: 10px; /* Increased padding */
+    font-size: 16px; /* Larger text size */
+    border: none;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.error-box {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: #f8d7da;
+    border-radius: 0.5rem;
+    color: #721c24;
+}
+
+.submit-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.25rem;
+    color: black;
+    background-color: #f9cb32;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #e5b527;
+}
+
+.login-link {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #f9cb32;
+}
+
+.login-link a {
+    color: #f9cb32;
+    text-decoration: underline;
+}
+
+.social-login .provider a {
+    display: block;
+    background-color: #4285f4;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration: none;
+    margin: 5px 0;
+}
+
+.social-login .provider a:hover {
+    background-color: #357ae8;
+}
+
+.social-login .provider img {
+    vertical-align: middle;
+    margin-right: 10px;
+}
+

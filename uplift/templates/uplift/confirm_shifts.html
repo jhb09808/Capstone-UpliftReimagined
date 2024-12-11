@@ -1,0 +1,330 @@
+{% extends 'uplift/base.html' %}
+{% load static %}
+
+{% block title %}Confirm Shifts{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="row mb-4">
+        <div class="col">
+            <a href="{% url 'dashboard' %}" class="btn btn-warning">
+                <i class="ion-arrow-left-c"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="report-section">
+        <h2>Pending Shifts</h2>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Volunteer</th>
+                        <th>Description</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for shift in pending_shifts %}
+                    <tr data-shift-id="{{ shift.id }}">
+                        <td>{{ shift.volunteer.username }}</td>
+                        <td>{{ shift.description }}</td>
+                        <td>{{ shift.start_time|date:"F d, Y h:i A" }}</td>
+                        <td>{{ shift.end_time|date:"F d, Y h:i A" }}</td>
+                        <td>
+                            <button type="button" class="btn btn-success btn-sm btn-approve">Approve</button>
+                            <button type="button" class="btn btn-danger btn-sm btn-reject">Reject</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="report-section mt-5">
+        <h2>Pending Cancellations</h2>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Volunteer</th>
+                        <th>Description</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for shift in pending_cancellations %}
+                    <tr data-shift-id="{{ shift.id }}">
+                        <td>{{ shift.volunteer.username }}</td>
+                        <td>{{ shift.description }}</td>
+                        <td>{{ shift.start_time|date:"F d, Y h:i A" }}</td>
+                        <td>{{ shift.end_time|date:"F d, Y h:i A" }}</td>
+                        <td>
+                            <button type="button" class="btn btn-success btn-sm btn-approve-cancellation">Approve</button>
+                            <button type="button" class="btn btn-danger btn-sm btn-reject-cancellation">Reject</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="report-section mt-5">
+    <h2>Shift History</h2>
+
+    <!-- Filter Controls -->
+    <div class="filter-section mb-4">
+        <select class="form-control d-inline-block w-auto mr-2" id="activityFilter">
+            <option value="all">All Activities</option>
+            <option value="approved">Approved</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="updated">Updated</option>
+        </select>
+        <button class="btn btn-warning" id="applyFilter">Apply Filter</button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Volunteer</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Description</th>
+                    <th>Activity</th>
+                    <th>Date & Time</th>
+                </tr>
+            </thead>
+            <tbody id="historyTableBody">
+                {% for log in shift_history %}
+                <tr data-activity="{{ log.activity|lower }}">
+                    <td>{{ log.volunteer.username }}</td>
+                    <td>{{ log.volunteer.email }}</td>
+                    <td>{{ log.volunteer.phone_number|default:"Not provided" }}</td>
+                    <td>{{ log.description }}</td>
+                    <td>
+                        <span class="badge {% if log.activity == 'Approved' %}badge-success
+                            {% elif log.activity == 'Cancelled' %}badge-danger
+                            {% else %}badge-info{% endif %}">
+                            {{ log.activity }}
+                        </span>
+                    </td>
+                    <td>{{ log.timestamp|date:"F d, Y h:i A" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+<style>
+    #main {
+        margin-left: 5em;
+    }
+    body {
+        background-image: url("{% static 'uplift/images/dashbg.png' %}");
+        background-attachment: fixed;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    .dashboard-container {
+        padding: 2rem;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.6);
+        border-radius: 10px;
+        margin: 2rem;
+        width: 90%;
+        max-width: 1200px;
+    }
+
+    .report-section {
+        background-color: white;
+        border-radius: 5px;
+        padding: 20px;
+        margin-top: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .table {
+        background-color: white;
+        border-radius: 5px;
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+    .thead-dark th {
+        background-color: #343a40;
+        color: white;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(249, 203, 50, 0.1);
+    }
+
+    .btn {
+        margin: 0.2rem;
+        border-radius: 20px;
+        padding: 0.25rem 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-warning {
+        background-color: #f9cb32;
+        border-color: #f9cb32;
+        color: black;
+    }
+
+    .btn-warning:hover {
+        background-color: black;
+        border-color: black;
+        color: #f9cb32;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+        color: white;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+        color: white;
+    }
+
+    @media print {
+        body {
+            background-image: none !important;
+            background-color: white !important;
+        }
+        .dashboard-container {
+            margin: 0;
+            padding: 20px;
+            background: none;
+        }
+        .btn {
+            display: none !important;
+        }
+        .report-section {
+            page-break-inside: avoid;
+            margin: 20px 0;
+            box-shadow: none;
+        }
+        .table {
+            border: 1px solid #dee2e6;
+        }
+        .table th {
+            background-color: #f8f9fa !important;
+            color: #000 !important;
+        }
+        .table td {
+            border: 1px solid #dee2e6;
+        }
+    }
+    .filter-section {
+    text-align: left;
+    padding: 1rem;
+    background-color: rgba(249, 203, 50, 0.1);
+    border-radius: 5px;
+}
+
+.badge {
+    padding: 0.5em 1em;
+    font-size: 0.9em;
+}
+
+.badge-success {
+    background-color: #28a745;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+}
+
+.badge-info {
+    background-color: #17a2b8;
+}
+</style>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    function handleShiftAction(shiftId, action) {
+        if (confirm(`Are you sure you want to ${action} this shift?`)) {
+            $.ajax({
+                url: "{% url 'confirm_shifts' %}",
+                method: 'POST',
+                data: {
+                    'shift_id': shiftId,
+                    'action': action,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $(`tr[data-shift-id="${shiftId}"]`).fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    } else {
+                        alert(response.message || 'Action failed');
+                    }
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                    alert('Error processing request');
+                }
+            });
+        }
+    }
+
+    // Pending Shifts
+    $(document).on('click', '.btn-approve', function() {
+        const shiftId = $(this).closest('tr').data('shift-id');
+        handleShiftAction(shiftId, 'approve');
+    });
+
+    $(document).on('click', '.btn-reject', function() {
+        const shiftId = $(this).closest('tr').data('shift-id');
+        handleShiftAction(shiftId, 'reject');
+    });
+
+    // Cancellations
+    $(document).on('click', '.btn-approve-cancellation', function() {
+        const shiftId = $(this).closest('tr').data('shift-id');
+        handleShiftAction(shiftId, 'approve cancellation');
+    });
+
+    $(document).on('click', '.btn-reject-cancellation', function() {
+        const shiftId = $(this).closest('tr').data('shift-id');
+        handleShiftAction(shiftId, 'reject cancellation');
+    });
+});
+// History Filter Functionality
+$('#applyFilter').click(function() {
+    const selectedActivity = $('#activityFilter').val();
+    if (selectedActivity === 'all') {
+        $('#historyTableBody tr').show();
+    } else {
+        $('#historyTableBody tr').hide();
+        $(`#historyTableBody tr[data-activity="${selectedActivity}"]`).show();
+    }
+});
+</script>
+{% endblock %}
