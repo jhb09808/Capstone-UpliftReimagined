@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Welcome to Uplift</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'register' %}">Register</a></li>
+                <li><a href="{% url 'login' %}">Login</a></li>
+                <li><a href="{% url 'volunteer_list' %}">Volunteer List</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h2>About Us</h2>
+        <p>Welcome to Uplift! We are dedicated to making a positive impact in our community. Learn more about us, volunteer, or track our inventory.</p>
+    </main>
+    <footer>
+        <p>&copy; 2024 Uplift. All rights reserved.</p>
+    </footer>
+</body>
+</html>
