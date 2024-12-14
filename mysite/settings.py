@@ -1,4 +1,5 @@
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -7,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-=s3&(=@ir7z(p#j&-!t+ggqgbu3j_d-x=qmp2ap0sq)ntekdfp"
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -136,8 +137,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': '970042068300-nkvjn6j7kssfnjghsh63eu45plicq546.apps.googleusercontent.com',
-            'secret': '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',
+            'client_id': config('GOOGLE_OAUTH_CLIENT_ID'),
+            'secret': config('GOOGLE_OAUTH_CLIENT_SECRET'),
             'key': ''
         }
     },

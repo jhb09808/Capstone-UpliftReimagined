@@ -1,0 +1,3 @@
+mysite/settings.py
+    GOOGLE_OAUTH_CLIENT_ID=970042068300-nkvjn6j7kssfnjghsh63eu45plicq546.apps.googleusercontent.com==>REMOVED
+    GOOGLE_OAUTH_CLIENT_SECRET=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==>REMOVED
